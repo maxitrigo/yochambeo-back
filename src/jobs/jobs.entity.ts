@@ -1,28 +1,75 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { v4 as uuid } from 'uuid';
 
 @Entity()
 export class Job {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string = uuid();
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    nullable: false
+  })
   imgUrl: string;
-  @Column()
+
+  @Column({
+    type: 'varchar',
+    nullable: false
+  })
   title: string;
 
-  @Column()
+  @Column({
+    type: 'text',
+    nullable: false
+  })
   description: string;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    nullable: false
+  })
   location: string;
   
-  @Column()
+  @Column({
+    type: 'varchar',
+    nullable: false
+  })
   company: string;
 
-  @Column()
+  @Column({
+    type: 'int',
+    nullable: false
+  })
   salary: number;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    nullable: false
+  })
+  jobType: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: false
+  })
+  phone: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: false
+  })
+  email: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: false
+  })
+  website: string;
+
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP'
+  })
   createdAt: Date;
   
 }
