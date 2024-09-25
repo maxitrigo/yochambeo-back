@@ -13,6 +13,11 @@ export class JobsController {
         return this.jobsService.findAll();
     }
 
+    @Get('search')
+    async search(@Body() searchData) {
+        return this.jobsService.search(searchData);
+    }
+
     @Post()
     async create(@Body() jobData: CreateJobDto) {
         return this.jobsService.create(jobData);

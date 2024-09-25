@@ -3,6 +3,7 @@ import { JobsModule } from './jobs/jobs.module';
 import { ConfigModule } from '@nestjs/config';
 import typeormConfig, { dataSource } from './config/typeorm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { JobCleanupService } from './job-cleanup/job-cleanup.service';
 
 
 @Module({
@@ -19,6 +20,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     JobsModule
   ],
   controllers: [],
-  providers: [],
+  providers: [JobCleanupService],
 })
 export class AppModule {}

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JobsRepository } from './jobs.repository';
 import { Job } from './jobs.entity';
 import { CreateJobDto } from './CreateJob.dto';
+import { LessThan } from 'typeorm';
 
 @Injectable()
 export class JobsService {
@@ -15,5 +16,13 @@ export class JobsService {
     
     create(jobData: CreateJobDto) {
         return this.jobRepository.create(jobData);
+    }
+    
+    search(searchData) {
+        return this.jobRepository.search(searchData);
+    }
+
+    removeOldJobs() {
+        return this.jobRepository.delete();
     }
 }
