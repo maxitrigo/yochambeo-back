@@ -46,7 +46,7 @@ export class Job {
     type: 'varchar',
     nullable: false
   })
-  jobType: string;
+  requirements: string;
 
   @Column({
     type: 'varchar',

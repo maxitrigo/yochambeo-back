@@ -28,7 +28,7 @@ export class CreateJobDto {
     
     @IsString()
     @IsNotEmpty()
-    jobType: string;
+    requirements: string;
 
     @IsString()
     @IsNotEmpty()

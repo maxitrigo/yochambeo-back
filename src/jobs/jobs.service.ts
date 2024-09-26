@@ -13,6 +13,10 @@ export class JobsService {
     findAll(): Promise<Job[]> {
         return this.jobRepository.findAll();
     }
+
+    async getAllJobs(limit: number, offset: number) {
+        return this.jobRepository.findPage(limit, offset);
+    }
     
     create(jobData: CreateJobDto) {
         return this.jobRepository.create(jobData);
