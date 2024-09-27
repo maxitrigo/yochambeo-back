@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { JobsRepository } from './jobs.repository';
 import { Job } from './jobs.entity';
 import { CreateJobDto } from './CreateJob.dto';
-import { LessThan } from 'typeorm';
 
 @Injectable()
 export class JobsService {
@@ -14,12 +13,12 @@ export class JobsService {
         return this.jobRepository.findAll();
     }
 
-    async getAllJobs(limit: number, offset: number) {
-        return this.jobRepository.findPage(limit, offset);
+    async getAllJobs(page: number, limit: number) {
+        return this.jobRepository.findPage(page, limit);
     }
     
-    create(jobData: CreateJobDto) {
-        return this.jobRepository.create(jobData);
+    create(file: Express.Multer.File, jobData: CreateJobDto) {
+        return this.jobRepository.create(file, jobData);
     }
     
     search(searchData) {
@@ -29,4 +28,5 @@ export class JobsService {
     removeOldJobs() {
         return this.jobRepository.delete();
     }
+
 }

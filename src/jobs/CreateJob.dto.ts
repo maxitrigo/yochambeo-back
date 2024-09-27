@@ -2,9 +2,6 @@ import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateJobDto {
 
-    @IsString()
-    @IsNotEmpty()
-    imgUrl: string;
 
     @IsString()
     @IsNotEmpty()
@@ -22,16 +19,15 @@ export class CreateJobDto {
     @IsNotEmpty()
     company: string;
 
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
-    salary: number;
+    salary: string;
     
     @IsString()
     @IsNotEmpty()
     requirements: string;
 
     @IsString()
-    @IsNotEmpty()
     phone: string;
 
     @IsString()
@@ -39,7 +35,12 @@ export class CreateJobDto {
     email: string;
 
     @IsString()
-    @IsNotEmpty()
     website: string;
+
+
+    imgUrl: string;
+
+
+    imgId: string
 
 }

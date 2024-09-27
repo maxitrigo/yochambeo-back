@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import typeormConfig, { dataSource } from './config/typeorm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JobCleanupService } from './job-cleanup/job-cleanup.service';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 
 @Module({
@@ -17,7 +18,8 @@ import { JobCleanupService } from './job-cleanup/job-cleanup.service';
         ...dataSource.options,
       })
     }),
-    JobsModule
+    JobsModule,
+    CloudinaryModule
   ],
   controllers: [],
   providers: [JobCleanupService],

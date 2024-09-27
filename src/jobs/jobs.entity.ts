@@ -8,9 +8,15 @@ export class Job {
 
   @Column({
     type: 'varchar',
-    nullable: false
+    nullable: true
   })
   imgUrl: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true
+  })
+  imgId: string;
 
   @Column({
     type: 'varchar',
@@ -37,20 +43,20 @@ export class Job {
   company: string;
 
   @Column({
-    type: 'int',
+    type: 'varchar',
     nullable: false
   })
-  salary: number;
+  salary: string;
 
   @Column({
-    type: 'varchar',
+    type: 'text',
     nullable: false
   })
   requirements: string;
 
   @Column({
     type: 'varchar',
-    nullable: false
+    nullable: true
   })
   phone: string;
 
@@ -62,7 +68,7 @@ export class Job {
 
   @Column({
     type: 'varchar',
-    nullable: false
+    nullable: true
   })
   website: string;
 

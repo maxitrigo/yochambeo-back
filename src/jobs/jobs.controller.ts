@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { JobsService } from './jobs.service';
-import { Job } from './jobs.entity';
 import { CreateJobDto } from './CreateJob.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 
 @Controller('jobs')
@@ -15,8 +15,7 @@ export class JobsController {
 
     @Get()
     async getJobs(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
-        const offset = (page - 1) * limit;
-        return this.jobsService.getAllJobs(limit, offset);
+        return this.jobsService.getAllJobs(page, limit);
     }
 
     @Get('search')
@@ -25,7 +24,10 @@ export class JobsController {
     }
 
     @Post()
-    async create(@Body() jobData: CreateJobDto) {
-        return this.jobsService.create(jobData);
+    @UseInterceptors(FileInterceptor('file'))
+    async create(
+        @UploadedFile() file: Express.Multer.File,
+        @Body() jobData: CreateJobDto) {
+        return this.jobsService.create(file, jobData);
     }
 }
