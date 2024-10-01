@@ -13,14 +13,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2  # Cambia esto a tu región específica
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-        with:
-          region: us-east-2  # Cambia esto a tu región específica
-
 
       - name: Build, tag, and push image to ECR
         run: |
@@ -33,3 +37,4 @@ jobs:
           # Actualiza tu instancia EC2
           aws ec2 describe-instances --instance-ids ${{ secrets.EC2_INSTANCE_ID }} --region ${{ secrets.EC2_REGION }}
           # Agrega comandos para detener el contenedor actual y ejecutar el nuevo
+
