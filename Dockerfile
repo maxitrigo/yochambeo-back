@@ -13,12 +13,10 @@ RUN npm install --production
 # Copia el resto de tu código
 COPY . .
 
-# Construye la aplicación
-RUN npm run build
-
 # Expone el puerto que utiliza la aplicación
 EXPOSE 3000
 
 # Comando para iniciar la aplicación
 CMD ["npm", "run", "start:prod"]
+
 
