@@ -1,12 +1,12 @@
-name: Deploy to AWS ECS
+name: Deploy to ECR and EC2
 
 on:
   push:
     branches:
-      - main
+      - main  # O la rama que uses para deploy
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,17 +19,14 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build and push Docker image
+      - name: Build, tag, and push image to ECR
         run: |
-          docker build -t yochambeo .
-          docker tag yochambeo:latest your-account-id.dkr.ecr.your-region.amazonaws.com/yochambeo:latest
-          docker push your-account-id.dkr.ecr.your-region.amazonaws.com/yochambeo:latest
+          docker build -t ${{ secrets.ECR_REPOSITORY }} .
+          docker tag ${{ secrets.ECR_REPOSITORY }}:latest ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
+          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
 
-      - name: Deploy to ECS
-        uses: aws-actions/ecs-deploy-task-definition@v1
-        with:
-          task-definition: your-task-definition
-          service: your-service
-          cluster: your-cluster
-          wait-for-service-stability: true
-          region: your-region
+      - name: Deploy to EC2
+        run: |
+          # Actualiza tu instancia EC2
+          aws ec2 describe-instances --instance-ids ${{ secrets.EC2_INSTANCE_ID }} --region ${{ secrets.EC2_REGION }}
+          # Agrega comandos para detener el contenedor actual y ejecutar el nuevo
