@@ -8,18 +8,15 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instala las dependencias
-RUN npm install --production
+RUN npm install
 
 # Copia el resto de los archivos
 COPY . .
-
-# Compila la aplicación
-RUN npm run build
 
 # Expone el puerto que usa tu aplicación (ajusta si es necesario)
 EXPOSE 3000
 
 # Comando para iniciar la aplicación
-CMD ["node", "dist/main"]
+CMD ["npm", "run", "start"]
 
 
