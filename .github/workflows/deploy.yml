@@ -13,6 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'  # Cambia esto a la versión de Node.js que uses
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -37,4 +45,5 @@ jobs:
           # Actualiza tu instancia EC2
           aws ec2 describe-instances --instance-ids ${{ secrets.EC2_INSTANCE_ID }} --region ${{ secrets.EC2_REGION }}
           # Agrega comandos para detener el contenedor actual y ejecutar el nuevo
+
 
