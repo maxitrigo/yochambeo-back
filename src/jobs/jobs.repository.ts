@@ -3,16 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, Repository } from 'typeorm';
 import { Job } from './jobs.entity';
 import { CreateJobDto } from './CreateJob.dto';
-import { UploadApiResponse, v2 as cloudinary } from 'cloudinary';
-import { bufferToStream } from 'buffer-to-stream';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { InstagramService } from 'src/instagram/instagram.service';
 
 @Injectable()
 export class JobsRepository {
   constructor(
     @InjectRepository(Job)
     private readonly jobsRepository: Repository<Job>,
-    private readonly CloudinaryService: CloudinaryService
+    private readonly CloudinaryService: CloudinaryService,
+    private readonly InstagramService: InstagramService,
   ) {}
   
   async findAll(): Promise<Job[]> {
@@ -34,17 +34,27 @@ export class JobsRepository {
     });
   }
   
-  async create(file: Express.Multer.File, jobData: CreateJobDto){
+  async create(profileImage: Express.Multer.File, instagramImage: Express.Multer.File, jobData: CreateJobDto){
     
     const newJob = new Job();
-    if (file) {
-        const image = await this.CloudinaryService.uploadImage(file);
+    
+    //imagen de perfil a cloudinary
+    if (profileImage) {
+        const image = await this.CloudinaryService.uploadImage(profileImage);
         newJob.imgUrl = image.secure_url;
         newJob.imgId = image.public_id;
     } else {
         newJob.imgUrl = null;
         newJob.imgId = null;
     }
+
+    //imagen a instagram
+    if (instagramImage) {
+      await this.InstagramService.postToInstagram(instagramImage, jobData.description);
+    }
+
+
+
 
     newJob.title = jobData.title;
     newJob.description = jobData.description;

@@ -7,6 +7,7 @@ import { CreateJobDto } from './CreateJob.dto';
 export class JobsService {
     constructor(
         private readonly jobRepository: JobsRepository,
+
     ) {}
     
     findAll(): Promise<Job[]> {
@@ -17,8 +18,8 @@ export class JobsService {
         return this.jobRepository.findPage(page, limit);
     }
     
-    create(file: Express.Multer.File, jobData: CreateJobDto) {
-        return this.jobRepository.create(file, jobData);
+    async create(profileImage: Express.Multer.File, instagramImage: Express.Multer.File, jobData: CreateJobDto) {
+        return this.jobRepository.create(profileImage, instagramImage, jobData);
     }
     
     search(searchData) {

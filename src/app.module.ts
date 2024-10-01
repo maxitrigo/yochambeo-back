@@ -5,6 +5,8 @@ import typeormConfig, { dataSource } from './config/typeorm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JobCleanupService } from './job-cleanup/job-cleanup.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { InstagramModule } from './instagram/instagram.module';
+import { MercadopagoModule } from './mercadopago/mercadopago.module';
 
 
 @Module({
@@ -19,7 +21,9 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       })
     }),
     JobsModule,
-    CloudinaryModule
+    CloudinaryModule,
+    InstagramModule,
+    MercadopagoModule
   ],
   controllers: [],
   providers: [JobCleanupService],
