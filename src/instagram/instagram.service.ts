@@ -24,7 +24,7 @@ export class InstagramService {
             try {
                 // Verifica si el usuario está logueado
                 await this.ig.account.currentUser();
-                console.log('Sesión activa, publicando imagen...');
+                console.log('Sesión activa, publicando imagen..');
 
                 const imageBuffer = file.buffer;
                 
