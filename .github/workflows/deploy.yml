@@ -71,17 +71,20 @@ jobs:
         run: |
           ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-3-16-113-94.us-east-2.compute.amazonaws.com << 'EOF'
             echo "Iniciando sesión en EC2..."
-            echo "Deteniendo contenedor si existe..."
-            docker stop my-backend || true
-            echo "Eliminando contenedor si existe..."
-            docker rm my-backend || true
+            
+            echo "Deteniendo y eliminando todos los contenedores..."
+            docker stop $(docker ps -aq) || true
+            docker rm $(docker ps -aq) || true
+
+            echo "Eliminando todas las imágenes..."
+            docker rmi $(docker images -q) || true
 
             echo "Iniciando sesión en ECR..."
             aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 861276100483.dkr.ecr.us-east-2.amazonaws.com
 
             echo "Tirando la imagen desde ECR..."
-            docker pull 861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}
+            docker pull "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
 
             echo "Ejecutando el contenedor..."
-            docker run -d --name my-backend -p 80:80 861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}
+            docker run -d --name my-backend -p 80:80 "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
           EOF
