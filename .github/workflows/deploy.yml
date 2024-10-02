@@ -72,5 +72,4 @@ jobs:
             docker rmi $(docker images -q) || true
             echo "Ejecutando contenedores con docker-compose..."
             docker-compose up -d
-        EOF
-
+          EOF
