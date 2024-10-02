@@ -67,56 +67,21 @@ jobs:
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > /tmp/ec2_key.pem
           chmod 600 /tmp/ec2_key.pem
 
-      - name: SSH into EC2 instance and deploy
+      - name: Deploy Docker image to EC2
         run: |
-          ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-3-16-113-94.us-east-2.compute.amazonaws.com << EOF
-            export AWS_REGION=us-east-2
-            export REGISTRY_URL="861276100483.dkr.ecr.us-east-2.amazonaws.com"
-            export REPOSITORY_NAME="yochambeo/back"
+          ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-3-16-113-94.us-east-2.compute.amazonaws.com << 'EOF'
+            echo "Iniciando sesión en EC2..."
+            echo "Deteniendo contenedor si existe..."
+            docker stop my-backend || true
+            echo "Eliminando contenedor si existe..."
+            docker rm my-backend || true
 
-            # Instalar Docker Compose si no está instalado
-            if ! command -v docker-compose &> /dev/null
-            then
-              echo "Docker Compose no encontrado. Instalando..."
-              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-              sudo chmod +x /usr/local/bin/docker-compose
-              echo "Docker Compose instalado."
-            else
-              echo "Docker Compose ya está instalado."
-            fi
-            
-            echo "Stop the current running container if exists.."
-            docker-compose down
+            echo "Iniciando sesión en ECR..."
+            aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 861276100483.dkr.ecr.us-east-2.amazonaws.com
 
-            echo "Pulling the new Docker image..."
-            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REGISTRY_URL
-            docker pull "$REGISTRY_URL/$REPOSITORY_NAME:${{ env.TAG }}"
+            echo "Tirando la imagen desde ECR..."
+            docker pull 861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}
 
-            echo "Verifying .env file before running container..."
-            if [ ! -f .env ]; then
-              echo ".env file not found on EC2! Downloading from S3..."
-              aws s3 cp s3://yochambeo.env/.env .env
-              
-              if [ ! -f .env ]; then
-                echo "Failed to download .env file from S3!"
-                exit 1
-              else
-                echo ".env file downloaded successfully."
-              fi
-            fi
-
-            # Listar archivos en el directorio para verificar
-            echo "Listing files in the current directory:"
-            ls -la
-            
-            # Verificar si el archivo docker-compose.yml existe
-            if [ ! -f docker-compose.yml ]; then
-              echo "docker-compose.yml not found in the current directory!"
-              exit 1
-            fi
-
-            echo "Running the new container..."
-            docker-compose up -d
+            echo "Ejecutando el contenedor..."
+            docker run -d --name my-backend -p 80:80 861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}
           EOF
-
-
