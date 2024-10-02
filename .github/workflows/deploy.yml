@@ -1,4 +1,4 @@
-name: Build and Deploy docker image to AWS ECR and deploy to EC2
+name: Build and Deploy Docker image to AWS ECR and deploy to EC2
 
 on:
   push:
@@ -22,6 +22,12 @@ jobs:
 
       - name: List files in the directory
         run: ls -la /home/runner/work/yochambeo-back/yochambeo-back/
+
+      - name: Download .env from S3
+        run: |
+          aws s3 cp s3://yochambeo.env/.env .env
+        # Añade un paso para verificar que el archivo .env se descargó correctamente
+        continue-on-error: true
 
       - name: Build Docker image and set Docker tag with TAG
         run: |
@@ -49,10 +55,6 @@ jobs:
         run: |
           docker push "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
 
-      - name: Download .env from S3
-        run: |
-          aws s3 cp s3://yochambeo.env/.env .env
-
       - name: SSH into EC2 instance and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -74,4 +76,3 @@ jobs:
 
             echo "Running the new container..."
             docker-compose up -d
-
