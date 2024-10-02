@@ -73,20 +73,19 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: /tmp/ec2_key.pem
+          key: /tmp/ec2_key.pem  # Asegúrate de referenciar el archivo correcto
           envs: |
             TAG=${TAG}
             AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_REGION=us-east-2
           script: |
-            echo "Stop the current running container if exists..."
-            cd /path/to/your/app # Asegúrate de que este sea el directorio correcto
+            echo "Stop the current running container if exists.."
             docker-compose down
 
             echo "Pulling the new Docker image..."
             aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ secrets.AWS_REGISTRY_URL }}
-            docker pull "${{ secrets.AWS_REGISTRY_URL }}/${{ secrets.REPOSITORY_NAME }}:${TAG}"
+            docker pull "${{ secrets.AWS_REGISTRY_URL }}/${{ secrets.REPOSITORY_NAME }}:${{ env.TAG }}"
 
             echo "Running the new container..."
             docker-compose up -d
