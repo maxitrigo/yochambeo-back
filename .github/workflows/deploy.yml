@@ -23,11 +23,27 @@ jobs:
       - name: List files in the directory
         run: ls -la /home/runner/work/yochambeo-back/yochambeo-back/
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
       - name: Download .env from S3
         run: |
           aws s3 cp s3://yochambeo.env/.env .env
         # Añade un paso para verificar que el archivo .env se descargó correctamente
         continue-on-error: true
+
+      - name: Verify .env file download
+        run: |
+          if [ ! -f .env ]; then
+            echo ".env file not found!"
+            exit 1
+          else
+            echo ".env file downloaded successfully."
+          fi
 
       - name: Build Docker image and set Docker tag with TAG
         run: |
@@ -39,13 +55,6 @@ jobs:
         run: |
           echo "AWS_REGISTRY_URL: ${{ secrets.AWS_REGISTRY_URL }}"
           echo "Generated Docker tag:  $TAG"
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
 
       - name: Login to Amazon ECR
         run: |
