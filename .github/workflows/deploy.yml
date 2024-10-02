@@ -1,4 +1,4 @@
-name: Build and Deploy Docker image to AWS ECR and deploy to EC2
+name: Build and Deploy Docker image to Docker Hub
 
 on:
   push:
@@ -12,49 +12,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install Docker Compose
+      - name: Build Docker image
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
+          docker build -t tu_usuario/yochambeo-back:latest .
 
-      - name: List files in the directory
-        run: ls -la
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
-
-      - name: Download .env from S3
+      - name: Push Docker image to Docker Hub
         run: |
-          aws s3 cp s3://yochambeo.env/.env .env
-
-      - name: Verify .env file download
-        run: |
-          if [ ! -f .env ]; then
-            echo ".env file not found!"
-            exit 1
-          else
-            echo ".env file downloaded successfully."
-          fi
-
-      - name: Build Docker image and set Docker tag to 'latest'
-        run: |
-          docker-compose build backend
-          docker tag "yochambeo/back" "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:latest"
-
-      - name: List Docker images
-        run: |
-          docker images
-
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Push Docker image to Amazon ECR with 'latest' tag
-        run: |
-          docker push "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:latest"
+          docker push tu_usuario/yochambeo-back:latest
 
       - name: Set up SSH key
         run: |
@@ -68,8 +35,7 @@ jobs:
             echo "Deteniendo y eliminando todos los contenedores..."
             docker stop $(docker ps -aq) || true
             docker rm $(docker ps -aq) || true
-            echo "Eliminando todas las imágenes..."
-            docker rmi $(docker images -q) || true
-            echo "Ejecutando contenedores con docker-compose..."
-            docker-compose up -d
+            echo "Ejecutando contenedor desde Docker Hub..."
+            docker pull tu_usuario/yochambeo-back:latest
+            docker run -d --name my-backend -p 80:80 tu_usuario/yochambeo-back:latest
           EOF
