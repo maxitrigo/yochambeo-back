@@ -1,7 +1,10 @@
-version: '3'
+version: '3.8'
 services:
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile  # Asegúrate de tener un Dockerfile en la raíz
+    image: yochambeo/back:latest  # Define un nombre y etiqueta para la imagen
     ports:
       - '3000:3000'
     env_file:
@@ -25,4 +28,3 @@ services:
 
 volumes:
   postgres-data:
-
