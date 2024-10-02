@@ -21,7 +21,7 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
 
       - name: List files in the directory
-        run: ls -la /home/runner/work/yochambeo-back/yochambeo-back/
+        run: ls -la
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -55,11 +55,6 @@ jobs:
           echo "Listing Docker images:"
           docker images
 
-      - name: Debug Environment Variables
-        run: |
-          echo "AWS_REGISTRY_URL: ${{ secrets.AWS_REGISTRY_URL }}"
-          echo "Generated Docker tag:  $TAG"
-
       - name: Login to Amazon ECR
         run: |
           aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 861276100483.dkr.ecr.us-east-2.amazonaws.com
@@ -78,20 +73,20 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          key: /tmp/ec2_key.pem
           envs: |
             TAG=${TAG}
             AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_REGION=us-east-2
           script: |
-            echo "Stop the current running container if exists.."
+            echo "Stop the current running container if exists..."
+            cd /path/to/your/app # Asegúrate de que este sea el directorio correcto
             docker-compose down
 
             echo "Pulling the new Docker image..."
             aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ secrets.AWS_REGISTRY_URL }}
-            docker pull "${{ secrets.AWS_REGISTRY_URL }}/${{ secrets.REPOSITORY_NAME }}:${{ env.TAG }}"
+            docker pull "${{ secrets.AWS_REGISTRY_URL }}/${{ secrets.REPOSITORY_NAME }}:${TAG}"
 
             echo "Running the new container..."
             docker-compose up -d
-
