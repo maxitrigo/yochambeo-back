@@ -71,6 +71,17 @@ jobs:
       - name: SSH into EC2 instance and deploy
         run: |
           ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-3-16-113-94.us-east-2.compute.amazonaws.com << EOF
+            # Instalar Docker Compose si no está instalado
+            if ! command -v docker-compose &> /dev/null
+            then
+              echo "Docker Compose no encontrado. Instalando..."
+              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+              echo "Docker Compose instalado."
+            else
+              echo "Docker Compose ya está instalado."
+            fi
+            
             echo "Stop the current running container if exists.."
             docker-compose down
 
