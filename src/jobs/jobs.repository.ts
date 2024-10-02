@@ -70,12 +70,11 @@ export class JobsRepository {
   }
 
   async delete(){
-    const fiveMinutesAgo = new Date(Date.now() -5 * 60 * 1000);
     const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
     const jobsToDelete = await this.jobsRepository.find({
         where: {
-            createdAt: LessThan(fiveMinutesAgo)
+            createdAt: LessThan(oneMonthAgo)
         }
     })
 
@@ -85,7 +84,7 @@ export class JobsRepository {
         }
 
     }
-    await this.jobsRepository.delete({ createdAt: LessThan(fiveMinutesAgo) });
+    await this.jobsRepository.delete({ createdAt: LessThan(oneMonthAgo) });
   }
 
 }
