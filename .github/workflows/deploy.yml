@@ -49,6 +49,9 @@ jobs:
             mkdir -p /tmp/env
             aws s3 cp s3://yochambeo.env/.env /tmp/env/.env
             
+            echo "Descargando docker-compose.yml de S3..."
+            aws s3 cp s3://yochambeo.env/docker-compose.yml ./docker-compose.yml
+            
             echo "Deteniendo y eliminando todos los contenedores..."
             docker-compose down || true  # Detener y eliminar contenedores usando docker-compose
             
