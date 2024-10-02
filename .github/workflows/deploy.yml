@@ -47,7 +47,7 @@ jobs:
 
             echo "Descargando .env de S3..."
             mkdir -p /tmp/env
-            aws s3 cp s3://yochambeo.env/.env /tmp/env/.env
+            aws s3 cp s3://yochambeo.env/.env /tmp/.env
             
             echo "Descargando docker-compose.yml de S3..."
             aws s3 cp s3://yochambeo.env/docker-compose.yml ./docker-compose.yml

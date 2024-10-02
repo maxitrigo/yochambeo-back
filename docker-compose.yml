@@ -5,14 +5,14 @@ services:
     ports:
       - '80:80'  # Cambiado a puerto 80 para coincidir con tu configuración de despliegue
     env_file:
-      - ../../tmp/env/.env  # Usando el archivo .env descargado de S3
+      - /tmp/.env  # Usando el archivo .env descargado de S3
     command: npm run start:prod
     restart: unless-stopped
 
   db:
     image: postgres:13
     env_file:
-      - ../../tmp/env/.env # Usando el archivo .env para la base de datos
+      - /tmp/.env  # Usando el archivo .env para la base de datos
     ports:
       - '5432:5432'
     volumes:
