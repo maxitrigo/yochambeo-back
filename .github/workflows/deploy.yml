@@ -38,11 +38,17 @@ jobs:
         run: |
           ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-3-16-113-94.us-east-2.compute.amazonaws.com << 'EOF'
             echo "Iniciando sesión en EC2..."
+            echo "Iniciando sesión en AWS..."
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region us-east-2
+            
+            echo "Descargando .env de S3..."
+            aws s3 cp s3://yochambeo.env/.env /path/to/.env
+            
             echo "Deteniendo y eliminando todos los contenedores..."
             docker stop $(docker ps -aq) || true
             docker rm $(docker ps -aq) || true
-            echo "Eliminando todas las imágenes..."
-            docker rmi $(docker images -q) || true
             echo "Ejecutando el contenedor desde Docker Hub..."
-            docker run -d --name yochambeo-back -p 80:80 maxitrigo/yochambeo-back:latest
+            docker run -d --name yochambeo-back --env-file /path/to/.env -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/yochambeo-back:latest
           EOF
