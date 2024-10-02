@@ -20,10 +20,13 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
 
+      - name: List files in the directory
+        run: ls -la /home/runner/work/yochambeo-back/yochambeo-back/
+
       - name: Build Docker image and set Docker tag with TAG
         run: |
           echo "Generated Docker tag: $TAG"
-          docker-compose -f docker-compose.prod.yml build backend
+          docker-compose build backend
           docker tag "yochambeo/back" "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
 
       - name: Debug Environment Variables
@@ -63,12 +66,12 @@ jobs:
             AWS_REGION=us-east-2
           script: |
             echo "Stop the current running container if exists..."
-            docker-compose -f docker-compose.prod.yml down
+            docker-compose down
 
             echo "Pulling the new Docker image..."
             aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ secrets.AWS_REGISTRY_URL }}
             docker pull "${{ secrets.AWS_REGISTRY_URL }}/${{ secrets.REPOSITORY_NAME }}:${{ env.TAG }}"
 
             echo "Running the new container..."
-            docker-compose -f docker-compose.prod.yml up -d
+            docker-compose up -d
 
