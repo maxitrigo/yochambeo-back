@@ -8,9 +8,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    env:
-      TAG: ${{ github.sha }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -43,24 +40,21 @@ jobs:
             echo ".env file downloaded successfully."
           fi
 
-      - name: Build Docker image and set Docker tag with TAG
+      - name: Build Docker image and set Docker tag to 'latest'
         run: |
-          echo "Generated Docker tag: $TAG"
           docker-compose build backend
-          docker tag "yochambeo/back" "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
+          docker tag "yochambeo/back" "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:latest"
 
       - name: List Docker images
         run: |
-          echo "Listing Docker images:"
           docker images
 
       - name: Login to Amazon ECR
-        run: |
-          aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 861276100483.dkr.ecr.us-east-2.amazonaws.com
+        uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Push Docker image to Amazon ECR
+      - name: Push Docker image to Amazon ECR with 'latest' tag
         run: |
-          docker push "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
+          docker push "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:latest"
 
       - name: Set up SSH key
         run: |
@@ -71,22 +65,12 @@ jobs:
         run: |
           ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-3-16-113-94.us-east-2.compute.amazonaws.com << 'EOF'
             echo "Iniciando sesión en EC2..."
-            
             echo "Deteniendo y eliminando todos los contenedores..."
             docker stop $(docker ps -aq) || true
             docker rm $(docker ps -aq) || true
-
             echo "Eliminando todas las imágenes..."
             docker rmi $(docker images -q) || true
-
-            echo "Iniciando sesión en ECR..."
-            aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 861276100483.dkr.ecr.us-east-2.amazonaws.com
-
-            echo "Obtener el último tag de la imagen"
-            TAG=$(aws ecr describe-images --repository-name yochambeo/back --query 'sort_by(imageDetails, &pushTime)[-1].imageTag' --output text)
-
-            echo "Último tag encontrado: ${TAG}"
-
-            echo "Ejecutando el contenedor..."
-            docker run -d --name my-backend -p 80:80 "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
+            echo "Ejecutando el contenedor con el tag 'latest'..."
+            docker run -d --name my-backend -p 80:80 "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:latest"
           EOF
+
