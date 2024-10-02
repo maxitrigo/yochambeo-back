@@ -50,8 +50,8 @@ jobs:
             aws s3 cp s3://yochambeo.env/.env /tmp/env/.env
             
             echo "Deteniendo y eliminando todos los contenedores..."
-            docker stop $(docker ps -aq) || true
-            docker rm $(docker ps -aq) || true
-            echo "Ejecutando el contenedor desde Docker Hub..."
-            docker run -d --name yochambeo-back --env-file /tmp/env/.env -p 80:80 ${{ secrets.DOCKER_HUB_USERNAME }}/yochambeo-back:latest
+            docker-compose down || true  # Detener y eliminar contenedores usando docker-compose
+            
+            echo "Ejecutando el contenedor desde Docker Hub con Docker Compose..."
+            docker-compose up -d  # Iniciar contenedores en segundo plano
           EOF

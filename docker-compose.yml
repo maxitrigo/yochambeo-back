@@ -1,26 +1,18 @@
 version: '3.8'
 services:
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile  # Asegúrate de tener un Dockerfile en la raíz
-    image: yochambeo/back:latest  # Define un nombre y etiqueta para la imagen
+    image: yochambeo/back:latest
     ports:
-      - '3000:3000'
+      - '80:80'  # Cambiado a puerto 80 para coincidir con tu configuración de despliegue
     env_file:
-      - .env
-    volumes:
-      - .:/app
-      - /app/node_modules
+      - /tmp/.env  # Usando el archivo .env descargado de S3
     command: npm run start:prod
-    depends_on:
-      - db
     restart: unless-stopped
 
   db:
     image: postgres:13
     env_file:
-      - .env
+      - /tmp/.env  # Usando el archivo .env para la base de datos
     ports:
       - '5432:5432'
     volumes:
