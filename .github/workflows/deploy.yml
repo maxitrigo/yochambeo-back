@@ -70,7 +70,7 @@ jobs:
             docker rm $(docker ps -aq) || true
             echo "Eliminando todas las imágenes..."
             docker rmi $(docker images -q) || true
-            echo "Ejecutando el contenedor con el tag 'latest'..."
-            docker run -d --name my-backend -p 80:80 "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:latest"
-          EOF
+            echo "Ejecutando contenedores con docker-compose..."
+            docker-compose up -d
+        EOF
 
