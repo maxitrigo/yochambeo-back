@@ -2,18 +2,23 @@ name: Build and Deploy docker image to AWS ECR and deploy to EC2
 
 on:
   push:
-    branches: [ main ] # Ejecuta el workflow cuando hay un push en la rama 'main'
+    branches: [ main ]
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest # Define el entorno donde se ejecutará el job
+    runs-on: ubuntu-latest
 
     env:
-      TAG: ${{ github.sha }} # Crea una etiqueta basada en el SHA del commit actual
+      TAG: ${{ github.sha }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2 # Clona el repositorio para obtener el código fuente
+        uses: actions/checkout@v2
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
 
       - name: Build Docker image and set Docker tag with TAG
         run: |
@@ -27,42 +32,43 @@ jobs:
           echo "Generated Docker tag:  $TAG"
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2 # Configura las credenciales de AWS
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} # Usa la clave de acceso almacenada en secretos
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # Usa la clave secreta almacenada en secretos
-          aws-region: us-east-2 # Especifica la región donde está el ECR
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
 
       - name: Login to Amazon ECR
         run: |
-          aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 861276100483.dkr.ecr.us-east-2.amazonaws.com # Inicia sesión en Amazon ECR
+          aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 861276100483.dkr.ecr.us-east-2.amazonaws.com
 
       - name: Push Docker image to Amazon ECR
         run: |
-          docker push "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}" # Empuja la imagen a ECR usando la etiqueta generada
+          docker push "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
 
       - name: Download .env from S3
         run: |
-          aws s3 cp s3://yochambeo.env/.env .env # Descarga el archivo .env desde S3 para configurar las variables de entorno
-      
-      - name: SSH into EC2 instance and deploy
-        uses: appleboy/ssh-action@master # Usa SSH para conectarse a la instancia EC2
-        with:
-          host: ${{ secrets.EC2_HOST }} # Dirección IP o hostname de la instancia EC2
-          username: ${{ secrets.EC2_USER }} # Nombre de usuario para acceder a la instancia
-          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }} # Clave privada SSH almacenada en secretos
-          envs: | # Variables de entorno que se pasarán al script
-            TAG=${TAG} # Variable de entorno para el tag de la imagen
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} 
-            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-            AWS_REGION=us-east-2 
-          script: |
-            echo "Stop the current running container if exists..." 
-            docker-compose -f docker-compose.prod.yml down 
+          aws s3 cp s3://yochambeo.env/.env .env
 
-            echo "Pulling the new Docker image..." 
+      - name: SSH into EC2 instance and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          envs: |
+            TAG=${TAG}
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_REGION=us-east-2
+          script: |
+            echo "Stop the current running container if exists..."
+            docker-compose -f docker-compose.prod.yml down
+
+            echo "Pulling the new Docker image..."
             aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ secrets.AWS_REGISTRY_URL }}
             docker pull "${{ secrets.AWS_REGISTRY_URL }}/${{ secrets.REPOSITORY_NAME }}:${{ env.TAG }}"
 
-            echo "Running the new container..." 
-            docker-compose -f docker-compose.prod.yml up -d 
+            echo "Running the new container..."
+            docker-compose -f docker-compose.prod.yml up -d
+
