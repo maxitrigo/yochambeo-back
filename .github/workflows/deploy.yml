@@ -82,9 +82,10 @@ jobs:
             echo "Iniciando sesión en ECR..."
             aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 861276100483.dkr.ecr.us-east-2.amazonaws.com
 
-            echo "TAG: ${TAG}"
-            echo "Tirando la imagen desde ECR..."
-            docker pull "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
+            echo "Obtener el último tag de la imagen"
+            TAG=$(aws ecr describe-images --repository-name yochambeo/back --query 'sort_by(imageDetails, &pushTime)[-1].imageTag' --output text)
+
+            echo "Último tag encontrado: ${TAG}"
 
             echo "Ejecutando el contenedor..."
             docker run -d --name my-backend -p 80:80 "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
