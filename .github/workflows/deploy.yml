@@ -80,7 +80,7 @@ jobs:
             AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_REGION=us-east-2
           script: |
-            echo "Stop the current running container if exists..."
+            echo "Stop the current running container if exists.."
             docker-compose down
 
             echo "Pulling the new Docker image..."
