@@ -68,6 +68,11 @@ jobs:
         run: |
           docker push "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
 
+      - name: Set up SSH key
+        run: |
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > /tmp/ec2_key.pem
+          chmod 600 /tmp/ec2_key.pem
+
       - name: SSH into EC2 instance and deploy
         uses: appleboy/ssh-action@master
         with:
