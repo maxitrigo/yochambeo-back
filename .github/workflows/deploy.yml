@@ -59,5 +59,6 @@ jobs:
             docker run --name postgres-container --env-file /tmp/.env -d postgres:latest
 
             echo "Ejecutando el contenedor desde Docker Hub..."
-            docker run --name yochambeo -d --env-file /tmp/.env --link postgres-container:db maxitrigo/yochambeo-back:latest
+            docker run --name yochambeo -d -p 80:3000 --env-file /tmp/.env --link postgres-container:db maxitrigo/yochambeo-back:latest
+
           EOF
