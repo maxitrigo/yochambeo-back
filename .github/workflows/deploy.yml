@@ -44,5 +44,5 @@ jobs:
             echo "Eliminando todas las imágenes..."
             docker rmi $(docker images -q) || true
             echo "Ejecutando el contenedor desde Docker Hub..."
-            docker run -d --name my-backend -p 80:80 "${{ secrets.DOCKERHUB_USERNAME }}/nest-demo:latest"
+            docker run -d --name yochambeo-back -p 80:80 maxitrigo/yochambeo-back:latest
           EOF
