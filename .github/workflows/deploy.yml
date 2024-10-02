@@ -33,7 +33,6 @@ jobs:
       - name: Download .env from S3
         run: |
           aws s3 cp s3://yochambeo.env/.env .env
-        # Añade un paso para verificar que el archivo .env se descargó correctamente
         continue-on-error: true
 
       - name: Verify .env file download
@@ -50,6 +49,11 @@ jobs:
           echo "Generated Docker tag: $TAG"
           docker-compose build backend
           docker tag "yochambeo/back" "861276100483.dkr.ecr.us-east-2.amazonaws.com/yochambeo/back:${TAG}"
+
+      - name: List Docker images
+        run: |
+          echo "Listing Docker images:"
+          docker images
 
       - name: Debug Environment Variables
         run: |
@@ -85,3 +89,4 @@ jobs:
 
             echo "Running the new container..."
             docker-compose up -d
+
