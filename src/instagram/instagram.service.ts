@@ -30,7 +30,9 @@ export class InstagramService {
                 
                 const imageUpload = await this.ig.publish.photo({
                     file: imageBuffer,
-                    caption: `${caption} entra a nuestra web, para ver mas publicaciones como esta.`,
+                    caption: `${caption} 
+                    
+                    Entra a http://yochambeo.com, para ver mas publicaciones como esta.`,
                 });
 
                 return imageUpload; // Retorna el resultado si se publica correctamente
