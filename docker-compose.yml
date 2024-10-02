@@ -12,6 +12,7 @@ services:
     command: npm run start:prod
     depends_on:
       - db
+    restart: unless-stopped
 
   db:
     image: postgres:13
