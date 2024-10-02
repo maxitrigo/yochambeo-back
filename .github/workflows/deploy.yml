@@ -56,5 +56,5 @@ jobs:
             docker run --name postgres-container -e POSTGRES_USER=your_user -e POSTGRES_PASSWORD=your_password -d postgres:latest
 
             echo "Ejecutando el contenedor desde Docker Hub..."
-            docker run -d --env-file /tmp/.env --link postgres-container:db your_dockerhub_username/yochambeo-back:latest
+            docker run -d --env-file /tmp/.env --link postgres-container:db maxitrigo/yochambeo-back:latest
           EOF
