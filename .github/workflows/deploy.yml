@@ -69,17 +69,8 @@ jobs:
           chmod 600 /tmp/ec2_key.pem
 
       - name: SSH into EC2 instance and deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: /tmp/ec2_key.pem  # Asegúrate de referenciar el archivo correcto
-          envs: |
-            TAG=${TAG}
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            AWS_REGION=us-east-2
-          script: |
+        run: |
+          ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             echo "Stop the current running container if exists.."
             docker-compose down
 
@@ -89,3 +80,4 @@ jobs:
 
             echo "Running the new container..."
             docker-compose up -d
+          EOF
