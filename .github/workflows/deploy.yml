@@ -33,7 +33,6 @@ jobs:
       - name: Download .env from S3
         run: |
           aws s3 cp s3://yochambeo.env/.env .env
-        continue-on-error: true
 
       - name: Verify .env file download
         run: |
@@ -71,6 +70,10 @@ jobs:
       - name: SSH into EC2 instance and deploy
         run: |
           ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-3-16-113-94.us-east-2.compute.amazonaws.com << EOF
+            export AWS_REGION=us-east-2
+            export REGISTRY_URL="861276100483.dkr.ecr.us-east-2.amazonaws.com"
+            export REPOSITORY_NAME="yochambeo/back"
+
             # Instalar Docker Compose si no está instalado
             if ! command -v docker-compose &> /dev/null
             then
@@ -86,9 +89,23 @@ jobs:
             docker-compose down
 
             echo "Pulling the new Docker image..."
-            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${{ secrets.AWS_REGISTRY_URL }}
-            docker pull "${{ secrets.AWS_REGISTRY_URL }}/${{ secrets.REPOSITORY_NAME }}:${{ env.TAG }}"
+            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REGISTRY_URL
+            docker pull "$REGISTRY_URL/$REPOSITORY_NAME:${{ env.TAG }}"
+
+            echo "Verifying .env file before running container..."
+            if [ ! -f .env ]; then
+              echo ".env file not found on EC2! Downloading from S3..."
+              aws s3 cp s3://yochambeo.env/.env .env
+              
+              if [ ! -f .env ]; then
+                echo "Failed to download .env file from S3!"
+                exit 1
+              else
+                echo ".env file downloaded successfully."
+              fi
+            fi
 
             echo "Running the new container..."
             docker-compose up -d
           EOF
+
