@@ -105,7 +105,18 @@ jobs:
               fi
             fi
 
+            # Listar archivos en el directorio para verificar
+            echo "Listing files in the current directory:"
+            ls -la
+            
+            # Verificar si el archivo docker-compose.yml existe
+            if [ ! -f docker-compose.yml ]; then
+              echo "docker-compose.yml not found in the current directory!"
+              exit 1
+            fi
+
             echo "Running the new container..."
             docker-compose up -d
           EOF
+
 
