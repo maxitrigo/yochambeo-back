@@ -70,7 +70,7 @@ jobs:
 
       - name: SSH into EC2 instance and deploy
         run: |
-          ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-3-16-113-94.us-east-2.compute.amazonaws.com << EOF
             echo "Stop the current running container if exists.."
             docker-compose down
 
