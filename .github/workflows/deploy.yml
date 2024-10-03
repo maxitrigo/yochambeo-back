@@ -1,4 +1,4 @@
-name: deploy
+name: CI/CD Pipeline
 
 on:
   push:
@@ -8,9 +8,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.11.1
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create env file
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+
+      - name: Build
+        run: npm run build
         
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -31,34 +47,24 @@ jobs:
 
       - name: Set up SSH key
         run: |
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > /tmp/ec2_key.pem
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY_SP }}" > /tmp/ec2_key.pem
           chmod 600 /tmp/ec2_key.pem
 
       - name: Deploy to EC2
         run: |
-          ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-3-16-113-94.us-east-2.compute.amazonaws.com << 'EOF'
+          ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-18-228-2-217.sa-east-1.compute.amazonaws.com << 'EOF'
             echo "Iniciando sesión en EC2..."
-            echo "Iniciando sesión en AWS..."
 
-            # Exportar las credenciales de AWS
-            export AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}"
-            export AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-            export AWS_DEFAULT_REGION="us-east-2"
+            echo "ir a la carpeta raiz"
+            cd yochambeoback
 
-            echo "Descargando .env de S3..."
-            mkdir -p /tmp/env
-            aws s3 cp s3://yochambeo.env/.env /tmp/.env
+            echo "Deteniendo dockers activos..."
+            docker-compose down
 
-            echo "Bajando y eliminando todos los contenedores..."
-            docker rm -f $(docker ps -aq) || true  # Eliminar todos los contenedores
+            echo "Bajando la imagen de docker..."
+            docker-compose pull
 
-            echo "Bajando y eliminando todas las imágenes de Docker..."
-            docker rmi $(docker images -q) || true  # Eliminar todas las imágenes
-
-            echo "Levantando imagen de PostgreSQL..."
-            docker run --name postgres-container --env-file /tmp/.env -d postgres:latest
-
-            echo "Ejecutando el contenedor desde Docker Hub..."
-            docker run --name yochambeo -d -p 80:3000 --env-file /tmp/.env --link postgres-container:db maxitrigo/yochambeo-back:latest
+            echo "Reiniciando dockers..."
+            docker-compose up -d
 
           EOF
