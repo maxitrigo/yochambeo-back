@@ -67,7 +67,7 @@ jobs:
             echo "Bajando la imagen de docker..."
             docker-compose pull
 
-            echo "Reiniciando dockers..."
+            echo "Reiniciando dockers.."
             docker-compose up -d
 
           EOF
