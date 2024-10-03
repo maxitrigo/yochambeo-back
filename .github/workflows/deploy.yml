@@ -58,6 +58,9 @@ jobs:
             echo "ir a la carpeta raiz"
             cd yochambeoback
 
+            # Guardar el archivo .env en la carpeta yochambeoback
+            echo "${{ secrets.ENV_FILE }}" > ~/yochambeoback/.env
+
             echo "Deteniendo dockers activos..."
             docker-compose down
 
