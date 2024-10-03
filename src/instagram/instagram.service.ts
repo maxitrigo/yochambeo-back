@@ -19,7 +19,7 @@ export class InstagramService {
         let attempts = 10; // Número de intentos permitidos
 
         while (attempts > 0) {
-            console.log('Iniciando sesión...');
+            console.log('Iniciando sesión..');
 
             try {
                 // Verifica si el usuario está logueado
