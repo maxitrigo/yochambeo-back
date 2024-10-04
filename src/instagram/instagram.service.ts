@@ -14,28 +14,30 @@ export class InstagramService {
     }
 
     async postToInstagram(file: Express.Multer.File, caption: string) {
-        await this.loadSession(); // Cargar sesión antes de iniciar la publicación
+        
+        this.loadSession(); // Cargar sesión antes de iniciar la publicación
 
         let attempts = 10; // Número de intentos permitidos
 
         while (attempts > 0) {
-            console.log('Iniciando sesión...');
 
             try {
                 // Verifica si el usuario está logueado
-                await this.ig.account.currentUser();
-                console.log('Sesión activa, publicando imagen...');
+                const currentUser = await this.ig.account.currentUser();
+                if(currentUser){
+                    console.log('Sesión activa, publicando imagen...');
 
-                const imageBuffer = file.buffer;
-                
-                const imageUpload = await this.ig.publish.photo({
-                    file: imageBuffer,
-                    caption: `${caption} 
+                    const imageBuffer = file.buffer;
                     
-                    Entra a http://yochambeo.com, para ver mas publicaciones como esta.`,
-                });
+                    const imageUpload = await this.ig.publish.photo({
+                        file: imageBuffer,
+                        caption: `${caption} 
+                        
+                        Entra a http://yochambeo.com, para ver mas publicaciones como esta.`,
+                    });
 
-                return imageUpload; // Retorna el resultado si se publica correctamente
+                    return 'imagen publicada'; // Retorna el resultado si se publica correctamente
+                }
             } catch (error) {
                 console.error('Error en la subida de la imagen:', error);
 
