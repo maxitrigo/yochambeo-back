@@ -33,7 +33,7 @@ export class InstagramService {
                         file: imageBuffer,
                         caption: `${caption} 
                         
-                        Entra a http://yochambeo.com, para ver mas publicaciones como esta.`,
+                    Entra a http://yochambeo.com, para ver mas publicaciones como esta.`,
                     });
 
                     return 'imagen publicada'; // Retorna el resultado si se publica correctamente
