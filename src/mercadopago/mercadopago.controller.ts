@@ -10,17 +10,12 @@ export class MercadoPagoController {
         return this.mercadoPagoService.createOrder();
     }
 
-    @Post('webhook')
-    async recieveWebhook(@Query() query, @Res() res) {
-        // Llama al servicio y guarda el resultado.
-        const result = await this.mercadoPagoService.recieveWebhook(query);
+    // @Post('webhook')
+    // async recieveWebhook(@Query() query, @Res() res) {
+    //     // Llama al servicio y guarda el resultado.
+    //     const result = await this.mercadoPagoService.recieveWebhook(query);
         
-        // Devuelve el resultado y un código de estado 200.
-        return res.status(200).send(result); // Envía el resultado obtenido del servicio
-    }
-
-    @Get('success')
-    async success(@Query() query, @Res() res) {
-        return this.mercadoPagoService.success(query, res);
-    }
+    //     // Devuelve el resultado y un código de estado 200.
+    //     return res.status(200).send(result); // Envía el resultado obtenido del servicio
+    // }
 }

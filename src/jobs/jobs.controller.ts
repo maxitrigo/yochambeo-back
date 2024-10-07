@@ -1,17 +1,13 @@
-import { Body, Controller, Get, Post, Query, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './CreateJob.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { AuthGuard } from 'src/Auth/AuthGuard';
 
 
 @Controller('jobs')
 export class JobsController {
     constructor(private readonly jobsService: JobsService) {}
-
-    @Get('all')
-    async findAll() {
-        return this.jobsService.findAll();
-    }
 
     @Get()
     async getJobs(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
@@ -24,6 +20,7 @@ export class JobsController {
     }
 
     @Post()
+    @UseGuards(AuthGuard)
     @UseInterceptors(FilesInterceptor('files'))
     async create(
         @UploadedFiles() files: Express.Multer.File[],
@@ -34,4 +31,5 @@ export class JobsController {
         console.log(profileImage, instagramImage, jobData);
         return this.jobsService.create(profileImage, instagramImage, jobData);
     }
+
 }
