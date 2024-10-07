@@ -1,22 +1,28 @@
 version: '3.8'
 services:
   backend:
-    image: yochambeo/back:latest
+    image: maxitrigo/yochambeo/back:latest
     ports:
-      - '80:80'  # Cambiado a puerto 80 para coincidir con tu configuración de despliegue
+      - '80:3000'  # Cambiado a puerto 80 para coincidir con tu configuración de despliegue
     env_file:
-      - /tmp/.env  # Usando el archivo .env descargado de S3
+      - .env  # Usando el archivo .env descargado de S3
     command: npm run start:prod
     restart: unless-stopped
 
   db:
-    image: postgres:13
+    image: postgres:latest
     env_file:
-      - /tmp/.env  # Usando el archivo .env para la base de datos
+      - .env  # Usando el archivo .env para la base de datos
     ports:
       - '5432:5432'
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - '5050:80'
+    env_file:
+      - .env
 volumes:
   postgres-data:
