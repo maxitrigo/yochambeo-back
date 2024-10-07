@@ -47,6 +47,9 @@ export class MercadoPagoService {
             }
         })
 
+        console.log(result);
+        
+
         const init_point = result.init_point;
 
         const token = jwt.sign({ init_point, auth: true }, process.env.JWT_SECRET, {expiresIn: '1h'});
