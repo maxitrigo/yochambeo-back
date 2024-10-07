@@ -38,7 +38,7 @@ export class MercadoPagoService {
                     installments: 1
                 },
                 back_urls: {
-                    success: `${process.env.BACK_URL_SUCCESS}/success`,
+                    success: 'http://18.225.9.140:80/success',
                     failure: 'http://localhost:3000/failure',
                     pending: 'http://localhost:3000/pending'
                 },
