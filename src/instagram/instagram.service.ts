@@ -15,7 +15,7 @@ export class InstagramService {
 
     async postToInstagram(file: Express.Multer.File, caption: string) {
         
-        this.loadSession(); // Cargar sesión antes de iniciar la publicación
+        this.loadSession(); // Cargar sesión antes de iniciar la publicación.
 
         let attempts = 10; // Número de intentos permitidos
 
