@@ -70,4 +70,7 @@ jobs:
             echo "Reiniciando dockers.."
             docker-compose up -d
 
+            echo "Limpiando imágenes no utilizadas..."
+            docker image prune -f  # Elimina imágenes no utilizadas
+
           EOF
