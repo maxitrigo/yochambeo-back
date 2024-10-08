@@ -47,7 +47,6 @@ export class MercadoPagoService {
             }
         })
 
-        console.log(result);
         
 
         const init_point = result.init_point;
@@ -56,39 +55,6 @@ export class MercadoPagoService {
         
         return { init_point: init_point, token: token };
     }
-
-    // async recieveWebhook(query) {
-    //     const id = query['data.id'];
-    
-    //     try {
-    //         const response = await fetch(`https://api.mercadopago.com/v1/payments/${id}`, {
-    //             method: 'GET',
-    //             headers: {
-    //                 'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
-    //             }
-    //         });
-    
-    //         const data = await response.json();
-    //         const statusDetail = data.status_detail;
-    
-    //         // Retorna solo el estado
-    //         if (statusDetail === 'accredited') {
-    //             return statusDetail; // Retorna 'accredited'
-    //         } else {
-    //             return false;  // Retorna 'false' si no fue acreditado
-    //         }
-            
-    //     } catch (error) {
-    //         console.log(error);
-    //         return 'error'; // Retorna un valor que indique error si es necesario
-    //     }
-    // }
-
-
-
-
-
-
 
 
 }
