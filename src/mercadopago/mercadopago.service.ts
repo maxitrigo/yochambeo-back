@@ -38,7 +38,7 @@ export class MercadoPagoService {
                     installments: 1
                 },
                 back_urls: {
-                    success: 'http://18.225.9.140:80/success',
+                    success: 'https://yochambeo.com/success',
                     failure: 'http://localhost:3000/failure',
                     pending: 'http://localhost:3000/pending'
                 },
