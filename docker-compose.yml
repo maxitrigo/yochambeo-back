@@ -7,7 +7,7 @@ services:
     env_file:
       - .env  # Usando el archivo .env descargado de S3
     command: npm run start:prod
-    restart: unless-stopped
+    restart: always
 
   db:
     image: postgres:latest

@@ -47,12 +47,12 @@ jobs:
 
       - name: Set up SSH key
         run: |
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY_SP }}" > /tmp/ec2_key.pem
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY_SP_HOT }}" > /tmp/ec2_key.pem
           chmod 600 /tmp/ec2_key.pem
 
       - name: Deploy to EC2
         run: |
-          ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-54-233-245-136.sa-east-1.compute.amazonaws.com << 'EOF'
+          ssh -i /tmp/ec2_key.pem -o StrictHostKeyChecking=no ubuntu@ec2-54-233-241-80.sa-east-1.compute.amazonaws.com << 'EOF'
             echo "Iniciando sesión en EC2..."
 
             echo "ir a la carpeta raiz"
