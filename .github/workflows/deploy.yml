@@ -64,7 +64,7 @@ jobs:
             echo "Deteniendo dockers activos..."
             docker-compose down
 
-            echo "Bajando la imagen de docker..."
+            echo "Bajando la imagen de docker.."
             docker-compose pull
 
             echo "Reiniciando dockers.."
