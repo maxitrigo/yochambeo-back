@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+import { v2, UploadApiResponse } from 'cloudinary';
+import * as sharp from 'sharp';
 import { Readable } from 'stream'
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -7,7 +8,7 @@ dotenv.config();
 @Injectable()
 export class CloudinaryService {
     constructor() {
-        cloudinary.config({
+        v2.config({
             cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
             api_key: process.env.CLOUDINARY_API_KEY,
             api_secret: process.env.CLOUDINARY_API_SECRET
@@ -22,8 +23,13 @@ export class CloudinaryService {
     }
 
     async uploadImage(file: Express.Multer.File): Promise<UploadApiResponse> {
+
+        const resizedFile = await this.resizeImage(file); // Redimensionar la imagen y convertirla a jpg
+
+
+        // Subir la imagen al Cloudinary
         return new Promise((resolve, reject) => {
-            const upload = cloudinary.uploader.upload_stream(
+            const upload = v2.uploader.upload_stream(
                 { resource_type: 'auto' },
                 (error, result) => {
                     if (error) {
@@ -33,14 +39,14 @@ export class CloudinaryService {
                     resolve(result);
                 }
             );
-    
-            this.bufferToStream(file.buffer).pipe(upload);
+            
+            this.bufferToStream(resizedFile.buffer).pipe(upload);
         });
     }
 
     async deleteImage(publicId: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            cloudinary.uploader.destroy(publicId, (error, result) => {
+            v2.uploader.destroy(publicId,(error, result) => {
                 if (error) {
                     return reject(new Error(`Error deleting image: ${error.message}`));
                 }
@@ -48,4 +54,19 @@ export class CloudinaryService {
             });
         });
     }
+
+    // Redimensionar la imagen y convertirla a jpg, devuelve un objeto Express.Multer.File con el buffer actualizado
+    async resizeImage(file: Express.Multer.File): Promise<Express.Multer.File> {
+        const buffer = await sharp(file.buffer)
+            .resize({ width: 800, height: 800 })
+            .jpeg({ quality: 80 })
+            .toBuffer();
+        return {
+            ...file,
+            buffer,
+            size: buffer.length
+        };
+    }
+
+    
 }

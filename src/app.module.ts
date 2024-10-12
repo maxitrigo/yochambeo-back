@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { JobsModule } from './jobs/jobs.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import typeormConfig, { dataSource } from './config/typeorm.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JobCleanupService } from './job-cleanup/job-cleanup.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { InstagramModule } from './instagram/instagram.module';
 import { MercadopagoModule } from './mercadopago/mercadopago.module';
+import { UsersModule } from './Users/users.module';
+import { AuthModule } from './Auth/auth.module';
 
 
 @Module({
@@ -16,10 +18,13 @@ import { MercadopagoModule } from './mercadopago/mercadopago.module';
       load: [typeormConfig],
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: async () => ({
-        ...dataSource.options,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        ...configService.get('typeorm'),
       })
     }),
+    UsersModule,
+    AuthModule,
     JobsModule,
     CloudinaryModule,
     InstagramModule,

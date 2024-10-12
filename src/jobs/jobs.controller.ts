@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Query, UploadedFile, UploadedFiles, UseGua
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './CreateJob.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { AuthGuard } from 'src/Auth/AuthGuard';
+import { AuthGuard } from 'src/Auth/auth.guard';
 
 
 @Controller('jobs')
