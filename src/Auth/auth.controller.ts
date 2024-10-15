@@ -1,6 +1,6 @@
 import { Body, Controller, Post, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor} from '@nestjs/platform-express';
 import { AuthGuard } from './auth.guard';
 import { CreateJobDto } from 'src/jobs/CreateJob.dto';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -25,12 +25,17 @@ export class AuthController {
     @Post('publish')
     @Roles(Role.ADMIN)
     @UseGuards(AuthGuard, RolesGuard)
-    @UseInterceptors(FilesInterceptor('files'))
+    @UseInterceptors(FileFieldsInterceptor([
+        { name: 'profileImage', maxCount: 1 },
+        { name: 'instagramImage', maxCount: 1 },
+      ]))
     async create(
-        @UploadedFiles() files: Express.Multer.File[],
+        @UploadedFiles() files: { profileImage?: Express.Multer.File[], instagramImage?: Express.Multer.File[] },
         @Body() jobData: CreateJobDto
     ) {
-        const [profileImage, instagramImage] = files;
+        const profileImage = files.profileImage ? files.profileImage[0] : null;
+        const instagramImage = files.instagramImage ? files.instagramImage[0] : null;
+        
         return this.jobsService.create(profileImage, instagramImage, jobData);
     }
 

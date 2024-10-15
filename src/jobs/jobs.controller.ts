@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './CreateJob.dto';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from 'src/Auth/auth.guard';
 
 
@@ -21,14 +21,16 @@ export class JobsController {
 
     @Post()
     @UseGuards(AuthGuard)
-    @UseInterceptors(FilesInterceptor('files'))
+    @UseInterceptors(FileFieldsInterceptor([
+        { name: 'profileImage', maxCount: 1 },
+        { name: 'instagramImage', maxCount: 1 },
+      ]))
     async create(
-        @UploadedFiles() files: Express.Multer.File[],
+        @UploadedFiles() files: { profileImage?: Express.Multer.File[], instagramImage?: Express.Multer.File[] },
         @Body() jobData: CreateJobDto
     ) {
-        const [profileImage, instagramImage] = files;
-        // Verificar qué se está recibiendo
-        console.log(profileImage, instagramImage, jobData);
+        const profileImage = files.profileImage ? files.profileImage[0] : null;
+        const instagramImage = files.instagramImage ? files.instagramImage[0] : null;
         return this.jobsService.create(profileImage, instagramImage, jobData);
     }
 
