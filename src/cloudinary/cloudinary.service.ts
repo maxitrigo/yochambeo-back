@@ -40,7 +40,7 @@ export class CloudinaryService {
                 }
             );
             
-            this.bufferToStream(resizedFile.buffer).pipe(upload);
+            this.bufferToStream(file.buffer).pipe(upload);
         });
     }
 
