@@ -26,7 +26,7 @@ export class MercadoPagoService {
                         description: 'Job Posting',
                         quantity: 1,
                         currency_id: 'UYU',
-                        unit_price: 1
+                        unit_price: 100
                     }
                 ],
                 payment_methods: {
