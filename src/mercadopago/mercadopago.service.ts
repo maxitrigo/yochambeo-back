@@ -30,7 +30,7 @@ export class MercadoPagoService {
                     }
                 ],
                 payment_methods: {
-                    excluded_payment_methods: [
+                    excluded_payment_types: [
                         {
                             id: 'ticket'
                         }
