@@ -10,7 +10,7 @@ export class JobsController {
     constructor(private readonly jobsService: JobsService) {}
 
     @Get()
-    async getJobs(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
+    async getJobs(@Query('page') page: number = 1, @Query('limit') limit: number = 20) {
         return this.jobsService.getAllJobs(page, limit);
     }
 
