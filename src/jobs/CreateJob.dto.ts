@@ -31,7 +31,6 @@ export class CreateJobDto {
     phone: string;
 
     @IsString()
-    @IsNotEmpty()
     email: string;
 
     @IsString()
