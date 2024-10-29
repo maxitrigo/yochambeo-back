@@ -62,7 +62,7 @@ export class Job {
 
   @Column({
     type: 'varchar',
-    nullable: false
+    nullable: true
   })
   email: string;
 
