@@ -9,14 +9,6 @@ export class InstagramService {
     private readonly ig_user = process.env.IG_USER_ID
     private readonly access_token = process.env.IG_ACCESS_TOKEN
 
-    private getRandomDelay(){
-        return Math.floor(Math.random() * (10000 - 2000 + 1)) + 2000; //Delay entre 2 y 10 segundos
-    }
-
-    private async sleep(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      }
-
     constructor( 
         private readonly cloudinary: CloudinaryService,
     ){}
